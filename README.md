@@ -1,0 +1,2 @@
+# assistive-communicative-glove
+glove
