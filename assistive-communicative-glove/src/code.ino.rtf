@@ -1,0 +1,270 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2822
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww11520\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 #include <LiquidCrystal_I2C.h>\
+LiquidCrystal_I2C lcd(0x27, 16, 2);\
+\
+// Variables for fingers\
+int F1 = 8;\
+int F2 = 9;\
+int F3 = 10;\
+int F4 = 11;\
+int F5 = 12;\
+int ts = A0;\
+int hb = A1;\
+\
+// Variables for VOICE\
+int V1 = 2;\
+int V2 = 3;\
+int V3 = 4;\
+int V4 = 5;\
+int V5 = 6;\
+int V6 = 7;\
+int buzzer = 13;\
+\
+int count=0;\
+\
+// Global variables for temperature and heartbeat\
+int temperature = 0;\
+int heartbeat = 0;\
+\
+void setup() \{\
+  lcd.init();\
+  lcd.backlight();\
+  lcd.clear();\
+  lcd.print("SMART GLOVES FOR");\
+  lcd.setCursor(0, 1);\
+  lcd.print("PARALYSED PATIENT");\
+  delay(2000);\
+  pinMode(F1, INPUT_PULLUP); // Fingers as input\
+  pinMode(F2, INPUT_PULLUP);\
+  pinMode(F3, INPUT_PULLUP);\
+  pinMode(F4, INPUT_PULLUP);\
+  pinMode(F5, INPUT_PULLUP);\
+  pinMode(ts, INPUT);\
+  pinMode(hb, INPUT);\
+  pinMode(V1, OUTPUT);\
+  pinMode(V2, OUTPUT);\
+  pinMode(V3, OUTPUT);\
+  pinMode(V4, OUTPUT);\
+  pinMode(V5, OUTPUT);\
+  pinMode(V6, OUTPUT);\
+  pinMode(buzzer, OUTPUT);\
+\
+  digitalWrite(V1, 1);\
+  digitalWrite(V2, 1);\
+  digitalWrite(V3, 1);\
+  digitalWrite(V4, 1);\
+  digitalWrite(V5, 1);\
+  digitalWrite(V6, 1);\
+  lcd.clear();\
+  lcd.print("WIFI INITIAL..");\
+  lcd.setCursor(0, 1);\
+  lcd.print("TURN ON HOTSPOT");\
+  Serial.begin(115200);\
+  wifi_init();\
+  alarm(2);\
+\}\
+\
+void loop()\
+\{\
+ patientassistant();\
+readHeartbeat();\
+readTemperature();\
+count=count+1;\
+if(count==10)\
+\{\
+ uploading();\
+count=0;\
+\}\
+\}\
+\
+void readTemperature() \
+\{\
+  int k = analogRead(ts);\
+  temperature = k * (5.0 / 1023.0) * 100; // Example conversion, adjust as needed\
+  temperature = map(temperature, 0, 1023, 0, 100); // Example conversion, adjust as needed\
+  Serial.print("Temperature: ");\
+  Serial.println(temperature);\
+  lcd.setCursor(0, 1);\
+  lcd.print("TEMP: ");\
+  lcd.print(temperature);\
+  delay(1000);\
+ \
+\}\
+\
+void readHeartbeat() \
+\{\
+  int hbValue = analogRead(hb);\
+  heartbeat = map(hbValue, 0, 1023, 60, 100); // Example conversion, adjust as needed\
+  lcd.clear();\
+  lcd.setCursor(0, 0);\
+  lcd.print("heartbeat: ");\
+  lcd.print(heartbeat);\
+  Serial.print("Your heartbeat rate: ");\
+  Serial.println(heartbeat);\
+\}\
+\
+void patientassistant() \{\
+  digitalWrite(F1, 1);\
+  digitalWrite(F2, 1);\
+  digitalWrite(F3, 1);\
+  digitalWrite(F4, 1);\
+  digitalWrite(F5, 1);\
+  // Serial.print("F2=");\
+  //  Serial.println(digitalRead(F2));\
+  int z=digitalRead(F2);\
+ \
+  if ((digitalRead(F1) == 0) && (digitalRead(F2) == 0) && (digitalRead(F3) == 0) && (digitalRead(F4) == 0)&& (digitalRead(F5) == 0)) \
+  \{\
+    lcd.clear();\
+    lcd.print("I AM HUNGRY");\
+    lcd.setCursor(0, 1);\
+    lcd.print("I WANT FOOD..");\
+    Serial.println("I AM HUNGRY");\
+    digitalWrite(V5, 0);\
+    delay(100);\
+    digitalWrite(V5, 1);\
+    alarm(5);\
+  \} \
+  else if (z == 0) \
+  \{\
+    digitalWrite(F2, 1);\
+    lcd.clear();\
+    lcd.print("I NEED HELP");\
+    lcd.setCursor(0, 1);\
+    lcd.print("PLZ HELP ME..");\
+    Serial.println("I need HELP");\
+    digitalWrite(V2, 0);\
+    delay(100);\
+    digitalWrite(V2, 1);\
+    alarm(2);\
+  \} \
+  else if (digitalRead(F1) == 0) \
+  \{\
+    lcd.clear();\
+    lcd.print("  EMERGENCY");\
+    lcd.setCursor(0, 1);\
+    lcd.print("PLZ HELP ME..");\
+    Serial.println("emergency");\
+    digitalWrite(V1, 0);\
+    delay(200);\
+    digitalWrite(V1, 1);\
+    alarm(1);\
+  \} \
+  \
+  \
+  else if (digitalRead(F3) == 0) \
+  \{\
+    lcd.clear();\
+    lcd.print("I WANT MEDICINE");\
+    lcd.setCursor(0, 1);\
+    lcd.print("PLZ HELP ME..");\
+    Serial.println("I want MEDICINE");\
+    digitalWrite(V3, 0);\
+    delay(100);\
+    digitalWrite(V3, 1);\
+    alarm(3);\
+  \} \
+  else if (digitalRead(F4) == 0) \
+  \{\
+    lcd.clear();\
+    lcd.print("WANT GO RESTROOM");\
+    lcd.setCursor(0, 1);\
+    lcd.print("PLZ HELP ME..");\
+    Serial.println("I want to go restroom");\
+    digitalWrite(V4, 0);\
+    delay(100);\
+    digitalWrite(V4, 1);\
+    alarm(4);\
+  \} else if (digitalRead(F5) == 0) \
+  \{\
+    lcd.clear();\
+    lcd.print("I WANT WATER");\
+    lcd.setCursor(0, 1);\
+    lcd.print("PLZ HELP ME..");\
+    Serial.println("I want WATER");\
+    digitalWrite(V6, 0);\
+    delay(100);\
+    digitalWrite(V6, 1);\
+    alarm(4);\
+  \} \
+  else \
+  \{\
+    lcd.clear();\
+    lcd.print("SMART GLOVES FOR");\
+    lcd.setCursor(0, 1);\
+    lcd.print("PARALYSED PATIENT");\
+    delay(1000);\
+  \}\
+\}\
+\
+void alarm(int x) \{\
+  for (int i = 0; i < x; i++) \{\
+    digitalWrite(buzzer, 1);\
+    delay(500);\
+    digitalWrite(buzzer, 0);\
+    delay(500);\
+  \}\
+\}\
+\
+void wifi_init() \{\
+  delay(2000);\
+  Serial.println("AT"); // Start command\
+  delay(2000);\
+  Serial.println("AT+CWMODE=1"); // Mode selection\
+  delay(2000);\
+  Serial.println("AT+CWLAP");\
+  delay(6000);\
+  Serial.println("AT+CWJAP=\\"ABCDEF\\",\\"1234567890\\"\\r\\n"); // Setting the internet connection\
+ \
+  delay(2000);\
+\}\
+\
+void sendtoserver()\
+\{\
+               \
+  //Serial.begin(115200);\
+  delay(1000);\
+ //  https://www.thingspeak.com/update?api_key=D73DSGTJ7HZ8LBEO&field1=26&field2=68&field3=8&field4=911\
+  String temp = "GET https://184.106.153.149/update?api_key=X5HZQFHC1P7UM79M&field1="; //get the api key\
+  temp += String(temperature);\
+  //  temp+=500;\
+  temp += "&field2=";\
+  temp += String(heartbeat); //sending the current  of wind to the server\
+  temp += "\\r\\n";\
+  temp+="\\r\\n\\r\\n\\r\\n";\
+  Serial.println("AT+CIPSTART=\\"TCP\\",\\"184.106.153.149\\",80\\r\\n");//start the sending to server\
+  delay(2000);\
+  //Serial.println("AT+CIPSEND=0,"+String(temp.length()));\
+  Serial.println("AT+CIPSEND=" + String(temp.length())); //sending the string to server\
+  Serial.println("\\r\\n");\
+\
+  //Serial.println("AT+CIPSEND=87\\r\\n");\
+  delay(2000);\
+  Serial.println(temp);\
+  //Serial.println("GET https://184.106.153.149/update?api_key=9FUQ5PCW9XIL6A2G&field1=70&field2=90\\r\\n");\
+  //Serial.print("GET https://184.106.153.149/update?api_key=9FUQ5PCW9XIL6A2G&field1=");\
+  //Serial.print(temp);\
+  Serial.print("\\r\\n");\
+  delay(2000);\
+  Serial.println("\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n\\r\\n");\
+  delay(2000);\
+  delay(2000);\
+  // temp='0';\
+  Serial.println("UPLOADING DONE....");\
+\}\
+\
+\
+void uploading()\
+\{\
+  sendtoserver();\
+  lcd.clear();\
+  lcd.print("DATA SENDING ");\
+  lcd.setCursor(0, 1);\
+  lcd.print("TO\'a0CLOUD...");\
+\}}
