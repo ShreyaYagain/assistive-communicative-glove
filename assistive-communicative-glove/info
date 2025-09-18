@@ -1,0 +1,26 @@
+Problem Statement:
+Individuals with speech or hearing impairments struggle to communicate with those unfamiliar with sign language. This communication gap leads to reduced independence, social interaction and mental health issues.
+
+Primary Objectives and Relevance:
+Design and develop a glove that detects hand gestures using sensors.
+Convert recognized gestures into audio or textual output in real time.
+Make it into communication + Health assessment tool
+
+Model Description:
+Glove connected to a small box housing ESP32, Arduino Uno, and circuit connections.
+On the glove, male and female copper plates detect contact and send signals to the microcontroller. Plates replace flex sensors which avoids movement restrictions.
+Small box includes- ESP32, LCD display, WiFi module, speaker, buzzer, and connecting wires.
+When plates touch, signal triggers audio + visual output.
+
+Tools & Techniques Used:
+Glove made from regular wool (flexible, cost-effective).
+Wool chosen instead of leather → lower cost + better mobility (leather = thicker, more expensive).
+Budget-friendly copper plates used for sensing.
+Arduino Uno + ESP32 for control and connectivity.
+Components selected to balance user comfort and hand mobility.
+
+outcomes:
+Functional prototype glove that assists users with speech disabilities using hand gestures.
+Clear audio and screen-based message output foraccessibility.
+Wireless medical data logging, useful for hospitals or care centers (healthwave+).
+Foundation for expanding into broader health monitoring for patients with limited mobility.
